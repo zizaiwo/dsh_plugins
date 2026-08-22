@@ -12,4 +12,5 @@
   disabled: true
 - insert:
     - id: dsh-session-categories
-      name: dsh-session-categories
+      name: '@zizaiwo/dsh-session-categories'
+

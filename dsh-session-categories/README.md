@@ -46,13 +46,13 @@
 
 1. 通过 npm 安装并挂载（发布后）：
    ```sh
-   dsh plugin --profile web add dsh-session-categories
+   dsh plugin --profile web add @zizaiwo/dsh-session-categories
    ```
    或手动在 `~/.dsh/profiles/web/package.json` 登记：
    ```json
    {
-     "dependencies": { "dsh-session-categories": "^0.1.0" },
-     "dsh": { "profile": { "bundles": [ "...官方 bundles...", "dsh-session-categories" ] } }
+     "dependencies": { "@zizaiwo/dsh-session-categories": "^0.1.0" },
+     "dsh": { "profile": { "bundles": [ "...官方 bundles...", "@zizaiwo/dsh-session-categories" ] } }
    }
    ```
    （`bundles` 数组末尾追加一行即可——这是所有 dsh bundle 插件的标准挂载方式。）
