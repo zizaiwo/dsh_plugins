@@ -42,7 +42,6 @@ dsh_plugins/
 
 ## 开发与维护
 
-- 合规校验：插件发布前用 [欧冶子（ouyezi）](https://github.com/deepseek-ai/deepseek-harness) 技能体系的 `check-plugin.mjs` 校验（14 条规则：bundle 声明/exports/依赖声明/LICENSE 等）
 - 提 Issue / PR 欢迎：https://github.com/zizaiwo/dsh_plugins/issues
 
 ## License

@@ -42,7 +42,6 @@ Each plugin directory is a **complete publishable bundle** (`package.json` decla
 
 ## Development
 
-- Compliance check: plugins are validated before publishing with `check-plugin.mjs` (14 rules: bundle declaration / exports / dependency declaration / LICENSE, etc.) from the ouyezi skill system
 - Issues / PRs welcome: https://github.com/zizaiwo/dsh_plugins/issues
 
 ## License
