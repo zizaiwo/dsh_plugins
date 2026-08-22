@@ -1,6 +1,6 @@
 {
   "name": "@zizaiwo/dsh-session-categories",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "type": "module",
   "main": "index.js",
   "exports": {
@@ -42,5 +42,17 @@
   "dependencies": {
     "@deepseek-ai/dsh-client-runtime": "^0.1.0-rc.7",
     "@deepseek-ai/dsh-client-ui-primitives": "^0.1.0-rc.7"
-  }
+  },
+  "description": "Organize DeepSeek Harness (dsh) sidebar sessions into custom category folders. dsh 侧边栏会话分类插件。",
+  "keywords": [
+    "dsh",
+    "deepseek-harness",
+    "deepseek",
+    "plugin",
+    "session",
+    "categories",
+    "workspace",
+    "sidebar",
+    "dsh-plugin"
+  ]
 }
