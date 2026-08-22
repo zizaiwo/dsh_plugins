@@ -1,0 +1,15 @@
+# dsh-session-categories bundle layer: 侧边栏会话分类（fork 官方 ui-workspace 完整替代）。
+#
+# 为什么这里 disabled 官方 ui-workspace：
+# 本插件 fork 官方 client 并注册同一个 slot（sidebar.workspaces）。slot 规则：
+#   - 子槽（sidebar.workspaces.directoryFlow）只能被一个 entry 声明；
+#   - renderSlot 只注入给声明了子槽的 occupant；
+#   - priority 越低越优先渲染（lowest renders）。
+# 官方存在时无法再声明子槽，因此必须禁用官方、由本插件独占。
+# 关键：loader patch 的 id 是 entry 短名（ui-workspace），不是包名；name 必须精确匹配。
+- id: ui-workspace
+  name: '@deepseek-ai/dsh-client-ui-workspace'
+  disabled: true
+- insert:
+    - id: dsh-session-categories
+      name: dsh-session-categories
