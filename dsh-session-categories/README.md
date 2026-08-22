@@ -1,78 +1,81 @@
-# dsh-session-categories（会话分类）
+# dsh-session-categories
 
-侧边栏会话按**自定义分类**组织：每个工作区下可以建立分类文件夹，会话拖入文件夹即归类；
-一个会话只属于一个分类，未分类会话归入固定的「未分类」组。
+English | [中文](README.zh.md)
 
-本插件**在官方 `@deepseek-ai/dsh-client-ui-workspace` 基础上扩展**：fork 官方客户端代码，
-复用其全部样式、primitives、搜索、会话行交互（重命名 / fork / 归档菜单、hover 卡片、
-工作区重命名与删除），仅在分组层注入分类逻辑。官方「按工作区分组 / 平铺 / 搜索」视图仍然可用
-（搜索时自动切换官方结果视图）。
+**Organize your DeepSeek Harness sidebar into custom session categories.** Each workspace gets its own folder tree — drag sessions into folders, create sessions right inside a category, and keep related work together.
 
-## 功能
+## Highlights
 
-- 分类管理：新建、重命名、删除（删除分类时其会话回到「未分类」，不删会话；删除需两次点击确认）
-- 分类排序：拖拽分类文件夹上下调整顺序（仅同工作区；拖到「未分类」= 移到末尾）
-- 移动会话：拖拽会话到分类文件夹 / 「未分类」文件夹
-- 文件夹内新建会话：hover 分类或「未分类」文件夹点「＋」，新建会话自动归入对应分组（复用工作区空白会话，少一步拖拽）
-- 每工作区独立：分类配置按工作区隔离
-- 保留能力：会话重命名 / fork / 归档、工作区重命名 / 删除 / 新建会话、搜索
+- **Zero-config takeover** — the bundle patch automatically disables the official workspace browser and mounts the category tree. Install, restart, done.
+- **Per-workspace categories** — every workspace keeps its own independent folder structure.
+- **Drag & drop** — move sessions between categories, reorder categories by dragging.
+- **Full official experience preserved** — built on a fork of the official UI: search, rename, fork, archive, and workspace actions all still work.
+- **Folders are cheap** — create a session directly inside any category (reuses the workspace blank session, one less drag).
 
-## 第一版取舍（后续增强候选）
+## Install
 
-- 批量移动：当前仅拖拽单会话移动；批量（多选后移动）待 v1.1
-- 分类内顺序：按更新时间倒序（官方手动排序未接入分类层）
-- 工作区 / 分类的展开折叠状态：当前为会话内 UI 状态（刷新后重置为展开）
+```sh
+dsh plugin --profile web add @zizaiwo/dsh-session-categories
+```
 
-## 架构
+Restart DSH. No further configuration — the patch disables the official `ui-workspace` and the category tree takes over the sidebar.
 
-- **Client**（`client.js`）：fork 官方 `dsh-client-ui-workspace`，`WorkspaceBrowser` 的分组层
-  换成 `CategoryTree`（复用官方 `ProjectRowItem` / `SessionNodeItem` / CSS module）。
-- **Host**（`index.js`）：`/api/dsh-session-categories` webServer 路由（loopback-only），
-  用 node:fs 读写分类数据（原子写：tmp + rename）。
-- **数据文件**：`{工作区}/.dsh/session-categories.json`（`.dsh` 不存在时回退
-  `{工作区}/session-categories.json`）。
-  形态：`{ version: 1, categories: [{id, name, createdAt}], sessionCategory: {sessionId: categoryId} }`
-  （无记录 = 未分类）。
+Manual profile registration:
 
-为什么不用动态插件的 `harness.handle / host.call`：那是动态插件专属私有 RPC，进程重启即失，
-常规仓库插件不可用，故数据通道走官方 webServer（与 dsh-ssh 同款模式）。
+```json
+{
+  "dependencies": { "@zizaiwo/dsh-session-categories": "^0.1.0" },
+  "dsh": { "profile": { "bundles": [ "...official bundles...", "@zizaiwo/dsh-session-categories" ] } }
+}
+```
 
-## 安装（自包含，无需额外手工配置）
+## Quick start
 
-本插件**自带 bundle patch**，安装后自动完成「禁用官方 ui-workspace + 挂载自身」，
-新设备无需手动改任何部署配置（`~/.dsh/profiles/web/cordis.patch.yml` 不用动）。
+1. Install and restart — every existing session appears under an **Uncategorized** group per workspace.
+2. Click **＋ New category**, type a name, press Enter.
+3. Drag a session onto a category folder — it moves in. One session, one category.
+4. Hover a category for ✎ rename / 🗑 delete (two-click confirm; sessions return to Uncategorized).
 
-### 步骤（以 web profile 为例）
+## Features
 
-1. 通过 npm 安装并挂载（发布后）：
-   ```sh
-   dsh plugin --profile web add @zizaiwo/dsh-session-categories
-   ```
-   或手动在 `~/.dsh/profiles/web/package.json` 登记：
-   ```json
-   {
-     "dependencies": { "@zizaiwo/dsh-session-categories": "^0.1.0" },
-     "dsh": { "profile": { "bundles": [ "...官方 bundles...", "@zizaiwo/dsh-session-categories" ] } }
-   }
-   ```
-   （`bundles` 数组末尾追加一行即可——这是所有 dsh bundle 插件的标准挂载方式。）
-2. 重启 DSH。
-3. 无需其他操作：插件 patch 会自动禁用官方 `ui-workspace`（`id: ui-workspace` 短名，
-   见 `cordis.patch.yml`），分类树接管侧边栏。
+- Category management: create, rename, delete (delete keeps your sessions, just ungroups them)
+- Category ordering: drag folders to reorder (per workspace; drag to "Uncategorized" = move to end)
+- Move sessions: drag sessions between categories
+- Create sessions in place: hover a folder and hit **＋**
+- Per-workspace isolation of category config
+- Official capabilities preserved: rename / fork / archive, workspace rename / delete / new session, search
 
-> 为什么插件要禁用官方：本插件 fork 官方 client 注册同一 slot。slot 规则里子槽
-> `sidebar.workspaces.directoryFlow` 只能被一个 entry 声明、`renderSlot` 只注入给声明子槽的
-> occupant——官方在场时无法再声明子槽，必须由本插件独占。
+## Compatibility
 
-### 排障
+- Targets the current dsh prerelease plugin APIs (`0.1.0-rc` era). dsh is in **developer preview** and does not promise pre-release compatibility — upgrade dsh and this plugin together.
 
-页面顶部会显示插件诊断横幅：绿字（apply/注册成功）或红字（具体错误）——套壳端无 DevTools
-也能定位。常见错误与解法见 `cordis.patch.yml` 注释。
+## Data
 
-## 验证清单
+Category data lives in `{workspace}/.dsh/session-categories.json` (falls back to `{workspace}/session-categories.json` when `.dsh` is absent). Shape: `{ version: 1, categories: [{id, name, createdAt}], sessionCategory: {sessionId: categoryId} }` — sessions without a record are uncategorized. Writes are atomic (tmp + rename).
 
-1. 侧边栏每个工作区下方出现「未分类」组（原会话全部归入其中）
-2. 「＋ 新建分类」→ 输入名称回车 → 出现空文件夹
-3. 拖拽会话到分类 → 会话从「未分类」移入该分类（一个会话只在一个分类）
-4. 分类行 hover：✎ 重命名、🗑 删除（两次点击确认，会话回未分类）
-5. 搜索、会话重命名 / 归档、工作区重命名 / 新建会话仍与官方一致
+---
+
+## For maintainers
+
+### Architecture
+
+- **Client** (`client.js`): fork of the official `dsh-client-ui-workspace`; the `WorkspaceBrowser` grouping layer is replaced by a `CategoryTree` (reusing official `ProjectRowItem` / `SessionNodeItem` and CSS modules).
+- **Host** (`index.js`): `webServer` route at `/api/dsh-session-categories` (loopback-only) persisting category data with `node:fs` (atomic write: tmp + rename).
+- **Data channel**: plain HTTP via the official web server — see "Why not harness.handle" below.
+
+### Why not `harness.handle` / `host.call`
+
+Those are dynamic-plugin-only private RPCs that die on process restart — unavailable to regular repository plugins. This plugin uses the official `webServer` route instead (same pattern as dsh-ssh).
+
+### Why the plugin disables the official `ui-workspace`
+
+This plugin forks the official client and registers the same slot. Slot rules allow `sidebar.workspaces.directoryFlow` to be declared by only one entry, and `renderSlot` only injects into the occupant that declares the child slot — so the official entry must be disabled for this plugin to take over. The patch does this automatically (`id: ui-workspace`, short name).
+
+### Development
+
+- No build step: plain JS host (`index.js`) + bundled client (`client.js`)
+- Validate: `node .dsh/skills/ouyezi/scripts/check-plugin.mjs <this-dir>`
+
+## License
+
+[Apache-2.0](LICENSE) © 2026 zizaiwo
