@@ -4,7 +4,7 @@ English | [中文](README.zh.md)
 
 [![npm version](https://img.shields.io/npm/v/@zizaiwo/dsh-session-categories)](https://www.npmjs.com/package/@zizaiwo/dsh-session-categories) [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 
-**Organize your DeepSeek Harness sidebar into custom session categories.** Each workspace gets its own folder tree — drag sessions into folders, create sessions right inside a category, and keep related work together.
+**Organize your DeepSeek Harness sidebar into custom session categories.** Each workspace gets its own set of plain folders — drag sessions into folders, create sessions right inside a category, and keep related work together.
 
 ## Highlights
 
