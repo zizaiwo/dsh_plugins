@@ -2714,8 +2714,8 @@ window.__ModuleLoader__.load({
 		* framework's global hooks.
 		* @param ctx - client root context.
 		*/
-		// ---- 页面内诊断横幅（套壳端无 DevTools，把状态/错误显示在页面上）----
-		function scBanner(msg, kind) {
+		// ---- 页面内错误横幅（套壳端无 DevTools，仅出错时显示，启动成功不弹）----
+		function scBanner(msg) {
 			try {
 				const tagId = "dsh-session-categories/banner";
 				let el = document.getElementById(tagId);
@@ -2725,14 +2725,9 @@ window.__ModuleLoader__.load({
 					el.style.cssText = "position:fixed;top:0;left:0;right:0;z-index:2147483647;padding:8px 12px;font:12px/1.5 system-ui,sans-serif;white-space:pre-wrap;word-break:break-all;border-bottom:1px solid;box-shadow:0 2px 8px rgba(0,0,0,.2);";
 					document.body.appendChild(el);
 				}
-				el.style.background = kind === "ok" ? "#e6f4ea" : "#fdecea";
-				el.style.color = kind === "ok" ? "#1e7e34" : "#b3261e";
+				el.style.background = "#fdecea";
+				el.style.color = "#b3261e";
 				el.textContent = "[dsh-session-categories] " + msg;
-				if (kind === "ok") {
-					setTimeout(() => {
-						if (el && el.parentNode) el.parentNode.removeChild(el);
-					}, 4000);
-				}
 			} catch {}
 		}
 		/** React 错误边界：捕获浏览组件渲染期崩溃并显示在侧边栏，避免整槽 abdicate。 */
@@ -2745,7 +2740,7 @@ window.__ModuleLoader__.load({
 				return { error };
 			}
 			componentDidCatch(error) {
-				scBanner("渲染崩溃: " + String((error && error.stack) || error), "error");
+				scBanner("渲染崩溃: " + String((error && error.stack) || error));
 			}
 			render() {
 				if (this.state.error !== null) {
@@ -2758,7 +2753,6 @@ window.__ModuleLoader__.load({
 			// 本插件 fork 官方 ui-workspace；locale 字典（namespace "workspace"）
 			// 已由官方 bundle 注册，此处跳过避免重复注册冲突，t() 沿用官方字典。
 			try {
-				scBanner("apply 开始", "ok");
 				// 本插件完整替代官方 ui-workspace（官方 bundle 已被禁用以避免子槽
 				// sidebar.workspaces.directoryFlow 重复声明冲突），因此自行注册
 				// workspace 字典，t() 由本插件提供。若官方 bundle 仍加载（重启前），
@@ -2840,10 +2834,9 @@ window.__ModuleLoader__.load({
 						inject: browserInjected,
 						locale: NS
 					}, (props) => (0, react_jsx_runtime.jsx)(ScErrorBoundary, { children: (0, react_jsx_runtime.jsx)(WorkspaceBrowser, props) }));
-					scBanner("sidebar.workspaces 注册成功 (priority -2)", "ok");
 					return disposer;
 				} catch (err) {
-					scBanner("sidebar.workspaces 注册失败: " + String((err && err.stack) || err), "error");
+					scBanner("sidebar.workspaces 注册失败: " + String((err && err.stack) || err));
 					return () => {};
 				}
 			});
@@ -2852,7 +2845,7 @@ window.__ModuleLoader__.load({
 			// 声明并自带默认 occupant（官方 ui-workspace 原本只是增强它）。本插件不参与
 			// 该 slot（非本次需求），保持 x6 默认选择器，避免子槽声明冲突与 renderSlot 缺失。
 			} catch (err) {
-				scBanner("apply 失败: " + String((err && err.stack) || err), "error");
+				scBanner("apply 失败: " + String((err && err.stack) || err));
 			}
 		}
 		//#endregion
